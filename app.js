@@ -54,8 +54,13 @@ io.sockets.on('connection', function (socket) {
 	socket.on('privatemsg', function(receiver, msg){
 		 // sockets[users[to]].emit;
 		// console.log("socket value is " + socket);
+		if (sockets[receiver]) {
 		 sockets[receiver].emit('showprivatemsg',socket.username,msg );
+		}
+		else{
+			console.log("User not found");
 		 //sockets[receiver].emit('showprivatemsg',socket.username,msg );
+		}
 		//console.log("receiver name " + receiver + "receiver socket id " +socket[receiver]);
 	});
 
@@ -63,7 +68,7 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-http.listen(3000, function(){
+http.listen(process.env.PORT || 3000, function(){
   console.log('listening on *:3000');
 });
     
