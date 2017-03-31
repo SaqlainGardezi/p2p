@@ -8,9 +8,9 @@ app.get('/', function(req, res){
 
 // usernames which are currently connected to the chat
 var usernames = {};
+var sockets={};
 
 io.sockets.on('connection', function (socket) {
-
 	// when the client emits 'sendchat', this listens and executes
 	socket.on('sendchat', function (data) {
 		// we tell the client to execute 'updatechat' with 2 parameters
@@ -21,6 +21,15 @@ io.sockets.on('connection', function (socket) {
 	socket.on('adduser', function(username){
 		// we store the username in the socket session for this client
 		socket.username = username;
+		//console.log(username + "My socket is " + socket);
+		
+		// store  id based on name
+		
+		//socket[username]=socket.id;
+		//socket[username]={ username : username, socket : socket };
+		sockets[username]=socket;
+		//sockets[socket.id] = { username : username, socket : socket }; 
+
 		// add the client's username to the global list
 		usernames[username] = username;
 		// echo to client they've connected
@@ -40,6 +49,18 @@ io.sockets.on('connection', function (socket) {
 		// echo globally that this client has left
 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
 	});
+
+	//Private Messaging
+	socket.on('privatemsg', function(receiver, msg){
+		 // sockets[users[to]].emit;
+		// console.log("socket value is " + socket);
+		 sockets[receiver].emit('showprivatemsg',socket.username,msg );
+		 //sockets[receiver].emit('showprivatemsg',socket.username,msg );
+		//console.log("receiver name " + receiver + "receiver socket id " +socket[receiver]);
+	});
+
+
+
 });
 
 http.listen(3000, function(){
